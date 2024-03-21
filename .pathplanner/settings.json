@@ -1,0 +1,18 @@
+{
+  "robotWidth": 0.58,
+  "robotLength": 0.69,
+  "holonomicMode": true,
+  "pathFolders": [
+    "note pose to note pose",
+    "note pose to shoot pose",
+    "note poses",
+    "shoot pose to note pose",
+    "starting pose to note"
+  ],
+  "autoFolders": [],
+  "defaultMaxVel": 4.5,
+  "defaultMaxAccel": 3.5,
+  "defaultMaxAngVel": 540.0,
+  "defaultMaxAngAccel": 720.0,
+  "maxModuleSpeed": 4.5
+}
