@@ -65,12 +65,12 @@ public class AprilTagVision implements Subsystem {
     // use measurements to center of Swerve, and include offset
     // pitch is the Y angle, and it is positive down
     private final Transform3d m_robotToFrontAprilTagCam = new Transform3d(
-            new Translation3d(Units.inchesToMeters(0.5 - DriveTrain.ROBOT_SWERVE_OFFSET_X_INCHES), 0, Units.inchesToMeters(18.5)),
-            new Rotation3d(0.0, Math.toRadians(-19.4), 0.0));
+        new Translation3d(Units.inchesToMeters(0.5 - DriveTrain.ROBOT_SWERVE_OFFSET_X_INCHES), 0, Units.inchesToMeters(18.5)),
+        new Rotation3d(0.0, Math.toRadians(-19.4), 0.0));
 
     private final Transform3d m_robotToBackAprilTagCam = new Transform3d(
-            new Translation3d(Units.inchesToMeters(-17.25 - DriveTrain.ROBOT_SWERVE_OFFSET_X_INCHES), 0, Units.inchesToMeters(10.0)),
-            new Rotation3d(0.0, Math.toRadians(-18.0), Math.toRadians(180.0)));
+        new Translation3d(Units.inchesToMeters(-17.25 - DriveTrain.ROBOT_SWERVE_OFFSET_X_INCHES), 0, Units.inchesToMeters(10.0)),
+        new Rotation3d(0.0, Math.toRadians(-18.0), Math.toRadians(180.0)));
 
     private final PhotonPoseEstimator m_photonPoseEstimatorFront;
     private final PhotonPoseEstimator m_photonPoseEstimatorBack;
@@ -79,9 +79,10 @@ public class AprilTagVision implements Subsystem {
     private VisionSystemSim m_visionSim;
 
     public AprilTagVision() {
+
         try {
             m_aprilTagFieldLayout = AprilTagFieldLayout
-                    .loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
+                .loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
         } catch (IOException e) {
             System.out.println("Unable to load AprilTag layout " + e.getMessage());
             m_aprilTagFieldLayout = null;
@@ -95,23 +96,24 @@ public class AprilTagVision implements Subsystem {
         // if there is multitag, use the corresponding strategy with reference as back up
         if (USE_MULTITAG) {
             m_photonPoseEstimatorFront = new PhotonPoseEstimator(m_aprilTagFieldLayout,
-                    PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-                    m_aprilTagCameraFront, m_robotToFrontAprilTagCam);
+                PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+                m_aprilTagCameraFront, m_robotToFrontAprilTagCam);
             m_photonPoseEstimatorFront.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_REFERENCE_POSE);
 
             m_photonPoseEstimatorBack = new PhotonPoseEstimator(m_aprilTagFieldLayout,
-                    PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-                    m_aprilTagCameraBack, m_robotToBackAprilTagCam);
+                PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+                m_aprilTagCameraBack, m_robotToBackAprilTagCam);
             m_photonPoseEstimatorBack.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_REFERENCE_POSE);
         } else {
             m_photonPoseEstimatorFront = new PhotonPoseEstimator(m_aprilTagFieldLayout,
-                    PoseStrategy.CLOSEST_TO_REFERENCE_POSE, m_aprilTagCameraFront, m_robotToFrontAprilTagCam);
+                PoseStrategy.CLOSEST_TO_REFERENCE_POSE, m_aprilTagCameraFront, m_robotToFrontAprilTagCam);
             m_photonPoseEstimatorBack = new PhotonPoseEstimator(m_aprilTagFieldLayout,
-                    PoseStrategy.CLOSEST_TO_REFERENCE_POSE, m_aprilTagCameraBack, m_robotToBackAprilTagCam);
+                PoseStrategy.CLOSEST_TO_REFERENCE_POSE, m_aprilTagCameraBack, m_robotToBackAprilTagCam);
         }
 
         // set the driver mode to false
         setDriverMode(false);
+        
     }
 
     public void setDriverMode(boolean mode) {
@@ -144,9 +146,9 @@ public class AprilTagVision implements Subsystem {
 
         Pose2d robotPose = odometry.getEstimatedPosition();
         Optional<EstimatedRobotPose> frontEstimate = 
-                getEstimateForCamera(m_aprilTagCameraFront, m_photonPoseEstimatorFront, robotPose);
+            getEstimateForCamera(m_aprilTagCameraFront, m_photonPoseEstimatorFront, robotPose);
         Optional<EstimatedRobotPose> backEstimate = 
-                getEstimateForCamera(m_aprilTagCameraBack, m_photonPoseEstimatorBack, robotPose);
+            getEstimateForCamera(m_aprilTagCameraBack, m_photonPoseEstimatorBack, robotPose);
 
         // if front estimate is not there just add back estimate 
         if (!frontEstimate.isPresent()) {
@@ -162,7 +164,7 @@ public class AprilTagVision implements Subsystem {
                     // But this will save some cycles if this PLOT option is turned off.
                     if (backEstimate.get().strategy != PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR) {
                         plotAlternateSolutions(field,
-                                List.of(getAmbiguousPoses(m_aprilTagCameraBack.getLatestResult(), m_robotToBackAprilTagCam)));
+                            List.of(getAmbiguousPoses(m_aprilTagCameraBack.getLatestResult(), m_robotToBackAprilTagCam)));
                     } else
                         field.getObject("visionAltPoses").setPose(pose);
                 }
@@ -188,9 +190,9 @@ public class AprilTagVision implements Subsystem {
                 // But this will save some cycles if this PLOT option is turned off.
                 if (frontEstimate.get().strategy != PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR) {
                     plotAlternateSolutions(field, 
-                            List.of(getAmbiguousPoses(m_aprilTagCameraFront.getLatestResult(), m_robotToFrontAprilTagCam)));
+                        List.of(getAmbiguousPoses(m_aprilTagCameraFront.getLatestResult(), m_robotToFrontAprilTagCam)));
                 } else
-                        field.getObject("visionAltPoses").setPose(pose);
+                    field.getObject("visionAltPoses").setPose(pose);
             }
 
             return;
