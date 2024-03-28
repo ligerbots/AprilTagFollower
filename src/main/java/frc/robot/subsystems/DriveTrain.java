@@ -209,8 +209,7 @@ public class DriveTrain extends SubsystemBase {
     }
 
     public boolean isInCenterZone() {
-        Pose2d poseBlue = FieldConstants.flipPose(getPose());
-        return poseBlue.getX() >= FieldConstants.BLUE_WING_LINE_X_METERS;
+        return false;
     }
 
     public Rotation2d getHeading() {
@@ -292,6 +291,33 @@ public class DriveTrain extends SubsystemBase {
                     -newInputY * m_maxVelocity,
                     newInputRotation * m_maxAngularVelocity);
         }
+
+        drive(chassisSpeeds);
+    }
+
+    public void tagFollowerDrive(double inputX, double inputY, double inputRotation) {
+        SmartDashboard.putNumber("drivetrain/tagFollowerX", inputX);
+        SmartDashboard.putNumber("drivetrain/tagFollowerY", inputY);
+        SmartDashboard.putNumber("drivetrain/tagFollowerR", inputRotation);
+
+        // apply SlewLimiters to the joystick values to control acceleration
+        double newInputX = m_xLimiter.calculate(inputX);
+        double newInputY = m_yLimiter.calculate(inputY);
+        double newInputRotation = m_rotationLimiter.calculate(inputRotation);
+        
+        // prevents a drive call with parameters of 0 0 0
+        if (Math.abs(newInputX) < 0.01 && Math.abs(newInputY) < 0.01 && Math.abs(newInputRotation) < 0.01) {
+            stop();
+            return;
+        }
+
+        
+        // when in robot-centric mode (a.k.a. always)
+        // most driving is using *back* camera, so invert directions
+        ChassisSpeeds chassisSpeeds = new ChassisSpeeds(
+            -newInputX * m_maxVelocity,
+            -newInputY * m_maxVelocity,
+            newInputRotation * m_maxAngularVelocity);
 
         drive(chassisSpeeds);
     }

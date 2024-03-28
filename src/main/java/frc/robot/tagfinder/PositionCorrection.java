@@ -4,7 +4,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveTrain;
 
@@ -27,16 +26,10 @@ public class PositionCorrection extends Command {
             new Rotation2d(targetAngle - currentAngle)
         );
     }
-    ChassisSpeeds getChassisSpeeds(Transform2d transform) {
-        return new ChassisSpeeds(
-            transform.getX(), transform.getY(),
-            transform.getRotation().getRadians()
-        );
-    }
-    void doRequiredMovement(ChassisSpeeds speed) {
-        m_driveTrain.drive(speed);
+    void doRequiredMovement(Transform2d transform) {
+        m_driveTrain.tagFollowerDrive(transform.getX(), transform.getY(), transform.getRotation().getRadians());
     }
     void doRequiredMovement(Transform3d transform) {
-        doRequiredMovement(getChassisSpeeds(getRequiredMovement(transform)));
+        doRequiredMovement(getRequiredMovement(transform));
     }
 }
