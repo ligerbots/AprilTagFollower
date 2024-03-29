@@ -149,18 +149,18 @@ public class RobotContainer {
 
         // Test commands
 
-        // JoystickButton farm22 = new JoystickButton(m_farm, 22);
-        // farm22.onTrue(new SetElevatorLength(m_elevator,
-        //         () -> Units.inchesToMeters(SmartDashboard.getNumber("elevator/testLength", 0)), false).withTimeout(5.0));
+        JoystickButton farm22 = new JoystickButton(m_farm, 22);
+        farm22.onTrue(new SetElevatorLength(m_elevator,
+                () -> Units.inchesToMeters(SmartDashboard.getNumber("elevator/testLength", 0)), false).withTimeout(5.0));
 
-        // JoystickButton farm23 = new JoystickButton(m_farm, 23);
-        // farm23.onTrue(new SetPivotAngle(m_shooterPivot,
-        //         () -> Math.toRadians(SmartDashboard.getNumber("shooterPivot/testAngle", 0)), false).withTimeout(5.0));
+        JoystickButton farm23 = new JoystickButton(m_farm, 23);
+        farm23.onTrue(new SetPivotAngle(m_shooterPivot,
+                () -> Math.toRadians(SmartDashboard.getNumber("shooterPivot/testAngle", 0)), false).withTimeout(5.0));
 
-        // JoystickButton farm24 = new JoystickButton(m_farm, 24);
-        // farm24.onTrue(new TestShoot(m_driveTrain, m_shooter,
-        //         () -> SmartDashboard.getNumber("shooter/testLeftRpm", 0),
-        //         () -> SmartDashboard.getNumber("shooter/testRightRpm", 0)));
+        JoystickButton farm24 = new JoystickButton(m_farm, 24);
+        farm24.onTrue(new TestShoot(m_driveTrain, m_shooter,
+                () -> SmartDashboard.getNumber("shooter/testLeftRpm", 0),
+                () -> SmartDashboard.getNumber("shooter/testRightRpm", 0)));
 
         // JoystickButton farm24 = new JoystickButton(m_farm, 24);
         // farm24.whileTrue(new ActiveTurnToHeadingWithDriving(m_driveTrain, m_driveTrain::headingToSpeaker,
