@@ -54,7 +54,7 @@ public class DriveTrain extends SubsystemBase {
     private static final double MAX_VELOCITY_METERS_PER_SECOND = FalconDriveController.MAX_VELOCITY_METERS_PER_SECOND;
 
     public static final double PATH_PLANNER_MAX_VELOCITY = 4.5;
-    public static final double PATH_PLANNER_MAX_ACCELERATION = 3.0;
+    public static final double PATH_PLANNER_MAX_ACCELERATION = 3.5;
     public static final double PATH_PLANNER_MAX_ANGULAR_VELOCITY = 4.5;
     public static final double PATH_PLANNER_MAX_ANGULAR_ACCELERATION = 4.5;
 
@@ -444,7 +444,11 @@ public class DriveTrain extends SubsystemBase {
     }
 
     public Rotation2d headingToSpeaker() {
-        return FieldConstants.flipTranslation(FieldConstants.BLUE_SPEAKER).minus(getPose().getTranslation()).getAngle();
+        Translation2d robotTrans = getPose().getTranslation();
+        double blueX = FieldConstants.flipTranslation(robotTrans).getX();
+        Translation2d targetTrans = blueX > FieldConstants.BLUE_WING_LINE_X_METERS ? 
+                FieldConstants.BLUE_PASS_TARGET : FieldConstants.BLUE_SPEAKER;
+        return FieldConstants.flipTranslation(targetTrans).minus(robotTrans).getAngle();
     }
 
     public double getAmpDistance() {
@@ -490,7 +494,7 @@ public class DriveTrain extends SubsystemBase {
         // SmartDashboard.putNumber("drivetrain/pitch", getPitch().getDegrees());
         SmartDashboard.putNumber("drivetrain/roll", getRoll().getDegrees());
         // SmartDashboard.putNumber("drivetrain/yaw", getYaw().getDegrees());
-        SmartDashboard.putNumber("drivetrain/headingAdjust", m_headingAdjustment);
+        SmartDashboard.putNumber("drivetrain/headingAdjust", Math.toDegrees(m_headingAdjustment));
 
         SmartDashboard.putBoolean("drivetrain/precisionMode", m_precisionMode);
         

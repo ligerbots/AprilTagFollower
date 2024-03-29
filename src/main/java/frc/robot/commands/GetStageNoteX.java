@@ -45,7 +45,7 @@ public class GetStageNoteX extends GetNoteX {
             new InstantCommand(intake::stop),
             // Wait for the Feeder to stop
             // new WaitUntilCommand(() -> (shooter.getFeederRpm() < Shooter.FEEDER_RPM_TOLERANCE)).withTimeout(1.0),
-            new WaitCommand(0.5),
+            new WaitCommand(0.2),
 
             // Spin up and shoot
             new AutoSpeakerShot(driveTrain, shooter, shooterPivot).alongWith(new InstantCommand(intake::clearHasNote))
@@ -55,10 +55,14 @@ public class GetStageNoteX extends GetNoteX {
     private PathPlannerPath getInitialPath() {
         Pose2d pose = m_driveTrain.getPose();
         Pose2d poseBlue = FieldConstants.flipPose(pose);
-        System.out.println("Starting getInitialPath " + poseBlue);
+        // System.out.println("Stage getInitialPath robot = " + poseBlue + " targetNote = " + m_targetNote);
+
+        // for (Pose2d p : m_candidateStartPaths.keySet()) {
+        //     System.out.println("candidate path key = " + p);
+        // }
 
         Pose2d closestPathStart = poseBlue.nearest(new ArrayList<>(m_candidateStartPaths.keySet()));
-        System.out.println("getInitialPath nearest = " + closestPathStart);
+        // System.out.println("getInitialPath nearest = " + closestPathStart);
         return m_candidateStartPaths.get(closestPathStart);
     }
 }
