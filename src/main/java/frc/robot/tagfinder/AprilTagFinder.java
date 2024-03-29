@@ -19,6 +19,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveTrain;
+import frc.robot.subsystems.ShooterPivot;
 
 import java.util.ArrayList;
 
@@ -34,23 +35,35 @@ import org.opencv.imgproc.Imgproc;
  * <p>Be aware that the performance on this is much worse than a coprocessor solution!
  */
 public class AprilTagFinder extends Command {
-    private final DriveTrain m_DriveTrain;
+    private final DriveTrain m_driveTrain;
+    private final ShooterPivot m_shooterPivot;
+    private final PositionCorrection m_positionCorrection;
+
     AprilTagDetector detector = new AprilTagDetector();
     AprilTagPoseEstimator.Config poseEstConfig;
     AprilTagPoseEstimator estimator;
     UsbCamera camera;
     CvSink cvSink;
     CvSource outputStream;
-    PositionCorrection positionCorrection;
     Mat mat, grayMat;
     ArrayList<Long> tags;
     Scalar outlineColor, crossColor;
     NetworkTable tagsTable;
     IntegerArrayPublisher pubTags;
 
-    public AprilTagFinder(DriveTrain driveTrain) {
+    Transform3d currentPosition;
+    private void setCurrentPosition(Transform3d currentPosition) {
+        this.currentPosition = currentPosition;
+    }
+    public Transform3d getCurrentPosition() {
+        return currentPosition;
+    }
+
+    public AprilTagFinder(DriveTrain driveTrain, ShooterPivot shooterPivot) {
         super();
-        m_DriveTrain = driveTrain;
+        m_driveTrain = driveTrain;
+        m_shooterPivot = shooterPivot;
+        m_positionCorrection = new PositionCorrection(m_driveTrain, m_shooterPivot, this::getCurrentPosition);
 
         detector = new AprilTagDetector();
         // look for tag36h11, correct 3 error bits
@@ -75,7 +88,6 @@ public class AprilTagFinder extends Command {
         // Setup a CvSource. This will send images back to the Dashboard
         outputStream = CameraServer.putVideo("Detected", 640, 480);
 
-        positionCorrection = new PositionCorrection(m_DriveTrain);
 
         // Mats are very memory expensive. Lets reuse these.
         mat = new Mat();
@@ -89,8 +101,9 @@ public class AprilTagFinder extends Command {
         // We'll output to NT
         tagsTable = NetworkTableInstance.getDefault().getTable("apriltags");
         pubTags = tagsTable.getIntegerArrayTopic("tags").publish();
+        m_positionCorrection.deadlineWith(this).schedule();
     }
-    
+
     void findAprilTagAndMove() {
         // Tell the CvSink to grab a frame from the camera and put it
         // in the source mat.  If there is an error notify the output.
@@ -158,7 +171,7 @@ public class AprilTagFinder extends Command {
             tags.stream()
                 .filter(l -> l.longValue() == 1)
                 .findFirst()
-                .ifPresent(l -> positionCorrection.doRequiredMovement(pose));
+                .ifPresent(l -> setCurrentPosition(pose));
         }
 
         // put list of tags onto dashboard
